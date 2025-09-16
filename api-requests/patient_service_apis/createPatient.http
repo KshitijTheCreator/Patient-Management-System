@@ -1,0 +1,11 @@
+### POST request to create a patient entry
+    POST    http://localhost:7001/patient
+Content-Type: application/json
+
+{
+  "name": "kfkfsd",
+  "email": "kfktesdfsst@fds.com",
+  "address": "malvarfe",
+  "dateOfBirth": "2001-06-02",
+  "registeredDate": "2024-04-01"
+}
