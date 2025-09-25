@@ -12,10 +12,12 @@ on:
   push:
     paths:
       - 'patient_service/**'
+      - '.github/workflows/**'
 
   pull_request:
     paths:
       - 'patient_service/**'
+      - '.github/workflows/**'
 
 jobs:
   build:
