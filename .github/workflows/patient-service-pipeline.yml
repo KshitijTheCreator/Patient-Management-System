@@ -34,6 +34,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
+
       - name: Build maven package
         working-directory: patient_service
         run: mvn -B clean package
@@ -42,3 +43,31 @@ jobs:
       - name: Update dependency graph
         working-directory: patient_service
         run: mvn com.github.ferstl:depgraph-maven-plugin:4.0.1:graph
+
+  docker:
+    name: Build & Push Docker image
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build & push
+        uses: docker/build-push-action@v5
+        with:
+          context: patient_service
+          file: patient_service/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/patient_service:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/patient_service:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/patient_service:cache
+          cache-to: type=inline
+
