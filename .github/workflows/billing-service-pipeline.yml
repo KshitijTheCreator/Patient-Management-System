@@ -3,16 +3,16 @@ name: API Gateway process pipeline
 on:
   push:
     paths:
-      - 'api-gateway/**'
-      - '.github/workflows/api-gateway-pipeline.yml'
+      - 'billing-service/**'
+      - '.github/workflows/billing-service-pipeline.yml'
   pull_request:
     paths:
-      - 'api-gateway/**'
-      - '.github/workflows/api-gateway-pipeline.yml'
+      - 'billing-service/**'
+      - '.github/workflows/billing-service-pipeline.yml'
 
 jobs:
   build:
-    name: Build api-gateway
+    name: Build billing-service
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -26,12 +26,12 @@ jobs:
           cache: maven
 
       - name: Build Maven package
-        working-directory: api-gateway
+        working-directory: billing-service
         run: mvn -B clean package -DskipTests
 
       # Optional: dependency graph (only if this module uses Maven and the plugin)
       - name: Update dependency graph
-        working-directory: api-gateway
+        working-directory: billing-service
         run: mvn com.github.ferstl:depgraph-maven-plugin:4.0.1:graph
 
   docker:
@@ -54,11 +54,11 @@ jobs:
       - name: Build & push
         uses: docker/build-push-action@v5
         with:
-          context: api-gateway
-          file: api-gateway/Dockerfile
+          context: billing-service
+          file: billing-service/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/api-gateway:${{ github.sha }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/api-gateway:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/api-gateway:cache
+            ${{ secrets.DOCKERHUB_USERNAME }}/billing-service:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/billing-service:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/billing-service:cache
           cache-to: type=inline
